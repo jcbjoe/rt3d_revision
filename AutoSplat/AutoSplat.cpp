@@ -656,8 +656,37 @@ int CopyTIM2Buffer(int sourcex, int sourcey, int destx, int desty, int rot)
 	
 	for (int i = 0; i < 32; i++) {
 		for (int j = 0; j < 32; j++){
-			Color pixel = GetPixel(sourcex+i, sourcey+j);
-			SetBufferPixel(destx+i, desty+j, pixel);
+			Color pixel = Black;
+			switch (rot)
+			{
+				case 0: 
+					pixel = GetPixel(sourcex + i, sourcey + j);
+					break;
+				case 1:
+					pixel = GetPixel(sourcex + (31 - i), sourcey + j);
+					break;
+				case 2:
+					pixel = GetPixel(sourcex + j, sourcey + (31 - i));
+					break;
+				case 3:
+					pixel = GetPixel(sourcex + (31 - j), sourcey + (31 - i));
+					break;
+				case 4:
+					pixel = GetPixel(sourcex + (31 - i), sourcey + (31 - j));
+					break;
+				case 5:
+					pixel = GetPixel(sourcex + i, sourcey + (31 - j));
+					break;
+				case 6:
+					pixel = GetPixel(sourcex + (31 - j), sourcey + i);
+					break;
+				case 7:
+					pixel = GetPixel(sourcex + j, sourcey + i);
+					break;
+			}
+
+			SetBufferPixel(destx + i, desty + j, pixel);
+			
 		}
 	}
 
@@ -684,7 +713,7 @@ int DrawSegments2Buffer(SEGMENT* pSegments, TIM_FILE* pTIMData)
 			for (int k = 0; k < 4; k++) {
 				int xPos = _TIMXPOS(segment.strTilePolyStruct[count].cTileRef);
 				int yPos = _TIMYPOS(segment.strTilePolyStruct[count].cTileRef);
-				CopyTIM2Buffer(xPos, yPos, (k*32) + mapPosX, (j*32) + mapPosY, 1);
+				CopyTIM2Buffer(xPos, yPos, (k*32) + mapPosX, (j*32) + mapPosY, segment.strTilePolyStruct[count].cRot);
 				count++;
 			}
 			
@@ -695,28 +724,6 @@ int DrawSegments2Buffer(SEGMENT* pSegments, TIM_FILE* pTIMData)
 			mapPosX = 0;
 		}
 	}
-
-
-
-
-	//for (POLYSTRUCT polystruct : pSegments->strTilePolyStruct) {
-
-	//	int xPos = _TIMXPOS(polystruct.cTileRef);
-	//	int yPos = _TIMYPOS(polystruct.cTileRef);
-
-
-	//	for (int i = 0; i < 64; i++) {
-	//		for (int j = 0; j < 64; j++) {
-	//			CopyTIM2Buffer(xPos, yPos, i * 16, j * 16, polystruct.cRot);
-	//		}
-	//	}
-
-	//	for
-	//}
-
-	// TO DO: Implement this function (see slides)
-	// Note the code below should copy the TIM at index "tileIndex" to the map grid square "mapIndex" 
-	// CopyTIM2Buffer(_TIMXPOS(tileIndex), _TIMYPOS(tileIndex), _MAPXPOS(mapIndex), _MAPYPOS(mapIndex), tileRot);
 
 	return 0;
 }
