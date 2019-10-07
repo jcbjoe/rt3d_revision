@@ -652,7 +652,8 @@ void SetBufferPixel(int x, int y, Color c)
 
 int CopyTIM2Buffer(int sourcex, int sourcey, int destx, int desty, int rot)
 {
-	// TO DO: Implement this function (see slides)
+
+	//--- Drawing the TIM (32x32) and applying a rotation - if it has one
 	
 	for (int i = 0; i < 32; i++) {
 		for (int j = 0; j < 32; j++){
@@ -705,20 +706,26 @@ int DrawSegments2Buffer(SEGMENT* pSegments, TIM_FILE* pTIMData)
 	int mapPosX = 0;
 	int mapPosY = 0;
 
+	//--- 256 Segments so we need to loop them all
 	for (int i = 0; i < 256; i++) {
 		SEGMENT segment = pSegments[i];
 
+		//--- Each segment has 16 Tiles (4x4)
 		int count = 0;
 		for (int j = 0; j < 4; j++) {
 			for (int k = 0; k < 4; k++) {
 				int xPos = _TIMXPOS(segment.strTilePolyStruct[count].cTileRef);
 				int yPos = _TIMYPOS(segment.strTilePolyStruct[count].cTileRef);
+				//--- Multiplying by 32 as a Tim is 32px x 32px - Decides where in the 16x16 grid where we need to print.
 				CopyTIM2Buffer(xPos, yPos, (k*32) + mapPosX, (j*32) + mapPosY, segment.strTilePolyStruct[count].cRot);
 				count++;
 			}
 			
 		}
+
+		//--- A segment is 4x4Tims, a Tim is 32px x 32px so 4x32 is 128 - add this to x
 		mapPosX += 128;
+		//--- Check if x is the max width - if it is then we reset x to 0 and increment the y downwards 1
 		if (mapPosX == 2048) {
 			mapPosY += 128; 
 			mapPosX = 0;
